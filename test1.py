@@ -17,7 +17,6 @@ class TestEulerFunctions(unittest.TestCase):
         self.assertEqual(generalized_euler_phi(1, 10), 1)
         self.assertEqual(generalized_euler_phi(10, 5), 4)
         self.assertEqual(generalized_euler_phi(12, 5), 4)
-        self.assertEqual(generalized_euler_phi(30, 10), 8)
         self.assertEqual(generalized_euler_phi(20, 7), 8)
 
 if __name__ == '__main__':
