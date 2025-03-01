@@ -22,7 +22,7 @@ def generalized_euler_phi(n, m):
         if p > n:
             break
         result -= result // p
-    return result
+    return result + 1
 
 def is_prime(num):
     if num < 2:
