@@ -32,7 +32,8 @@ def is_prime(num):
             return False
     return True
 
-n = int(input("Enter n: "))
-m = int(input("Enter m: "))
-print(f"φ({n}) = {euler_phi(n)}")
-print(f"φ({n}, {m}) = {generalized_euler_phi(n, m)}")
+if __name__ == "main":
+    n = int(input("Enter n: "))
+    m = int(input("Enter m: "))
+    print(f"φ({n}) = {euler_phi(n)}")
+    print(f"φ({n}, {m}) = {generalized_euler_phi(n, m)}")
