@@ -12,6 +12,8 @@ def euler_phi(n):
     return result
 
 def generalized_euler_phi(n, m):
+    if n == 1:
+        return 1
     primes = []
     for num in range(2, m + 1):
         if is_prime(num):
