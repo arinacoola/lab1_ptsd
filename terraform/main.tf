@@ -133,7 +133,7 @@ resource "aws_lambda_function" "lambda_copy_s3" {
     variables = {
       S3_START  = aws_s3_bucket.s3_start.id
       S3_FINISH = aws_s3_bucket.s3_finish.id
-      SQS_QUEUE = aws_sqs_queue.lambda_queue.id
+      SQS_QUEUE_URL = aws_sqs_queue.lambda_queue.url
     }
   }
 }
