@@ -43,3 +43,11 @@ resource "aws_s3_bucket_lifecycle_configuration" "s3_finish_lifecycle" {
     }
   }
 }
+
+data "archive_file" "lambda" {
+    type = "zip"
+    source_file  = "lambda/lambda_function.py"
+    output_path = "lambda/lambda_function.zip"
+}
+
+
