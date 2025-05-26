@@ -1,6 +1,6 @@
 provider "aws" {
-  access_key                  = "mock_access_key"
-  secret_key                  = "mock_secret_key"
+  access_key                  = "test"
+  secret_key                  = "test"
   region                      = "us-east-1"
   s3_use_path_style           = true
   skip_credentials_validation = true
@@ -8,10 +8,10 @@ provider "aws" {
   skip_requesting_account_id  = true
 
   endpoints {
-     s3     = "http://localhost:4566"
+    s3     = "http://localhost:4566"
     lambda = "http://localhost:4566"
     iam    = "http://localhost:4566"
-
+    sqs    = "http://localhost:4566"
   }
 }
 
@@ -23,15 +23,19 @@ resource "aws_s3_bucket" "s3_finish" {
   bucket = "s3-finish"
 }
 
+resource "aws_sqs_queue" "lambda_queue" {
+  name = "lambda-queue"
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "s3_start_lifecycle" {
   bucket = aws_s3_bucket.s3_start.id
 
   rule {
     id     = "Rule-1"
     status = "Enabled"
-    filter { 
-	prefix = " "
-    } 
+    filter {
+        prefix = " "
+    }
     expiration {
       days = 90
     }
@@ -44,8 +48,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "s3_finish_lifecycle" {
   rule {
     id     = "Rule-2"
     status = "Enabled"
-    filter{
-	prefix = " "
+    filter {
+        prefix = ""
     }
     expiration {
       days = 100
@@ -101,6 +105,22 @@ resource "aws_iam_role_policy" "lambda_s3_policy" {
   })
 }
 
+resource "aws_iam_role_policy" "lambda_sqs_policy" {
+  name = "lambda_sqs_policy"
+  role = aws_iam_role.lambda_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = ["sqs:SendMessage"],
+        Resource = aws_sqs_queue.lambda_queue.arn
+      }
+    ]
+  })
+}
+
 resource "aws_lambda_function" "lambda_copy_s3" {
   function_name    = "lambda_copy_s3"
   runtime          = "python3.11"
@@ -113,6 +133,7 @@ resource "aws_lambda_function" "lambda_copy_s3" {
     variables = {
       S3_START  = aws_s3_bucket.s3_start.id
       S3_FINISH = aws_s3_bucket.s3_finish.id
+      SQS_QUEUE =  aws_sqs_queue.sqs_queue.id
     }
   }
 }
@@ -135,4 +156,3 @@ resource "aws_s3_bucket_notification" "trigger_lambda" {
 
   depends_on = [aws_lambda_permission.allow_s3]
 } 
-
