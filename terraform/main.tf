@@ -34,7 +34,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "s3_start_lifecycle" {
     id     = "Rule-1"
     status = "Enabled"
     filter {
-        prefix = " "
+        prefix = ""
     }
     expiration {
       days = 90
@@ -133,7 +133,7 @@ resource "aws_lambda_function" "lambda_copy_s3" {
     variables = {
       S3_START  = aws_s3_bucket.s3_start.id
       S3_FINISH = aws_s3_bucket.s3_finish.id
-      SQS_QUEUE =  aws_sqs_queue.sqs_queue.id
+      SQS_QUEUE = aws_sqs_queue.lambda_queue.id
     }
   }
 }
