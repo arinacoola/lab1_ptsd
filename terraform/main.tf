@@ -8,7 +8,10 @@ provider "aws" {
   skip_requesting_account_id  = true
 
   endpoints {
-    s3 = "http://s3.localhost.localstack.cloud:4566"
+     s3     = "http://localhost:4566"
+    lambda = "http://localhost:4566"
+    iam    = "http://localhost:4566"
+
   }
 }
 
@@ -26,6 +29,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "s3_start_lifecycle" {
   rule {
     id     = "Rule-1"
     status = "Enabled"
+    filter { 
+	prefix = " "
+    } 
     expiration {
       days = 90
     }
@@ -38,16 +44,19 @@ resource "aws_s3_bucket_lifecycle_configuration" "s3_finish_lifecycle" {
   rule {
     id     = "Rule-2"
     status = "Enabled"
+    filter{
+	prefix = " "
+    }
     expiration {
       days = 100
     }
   }
 }
 
-data "archive_file" "lambda" {
-    type = "zip"
-    source_file  = "lambda/lambda_function.py"
-    output_path = "lambda/lambda_function.zip"
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = "${path.module}/lambda/lambda_function.py"
+  output_path = "${path.module}/lambda/lambda_function.zip"
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
@@ -107,4 +116,3 @@ resource "aws_lambda_function" "lambda_copy_s3" {
     }
   }
 }
-
