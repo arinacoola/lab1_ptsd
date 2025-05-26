@@ -4,11 +4,9 @@ import boto3
 s3 = boto3.client('s3')
 sqs = boto3.client('sqs')
 
-
 def lambda_handler(event, context):
     destination_bucket = 's3-finish'
-    queue_name = os.environ["SQS_QUEUE"]
-    queue_url = f"http://localhost:4566/000000000000/{queue_name}"
+    queue_url = os.environ["SQS_QUEUE_URL"]  
     for record in event['Records']:
         source_bucket = record['s3']['bucket']['name']
         s3_key = record['s3']['object']['key']
@@ -18,8 +16,7 @@ def lambda_handler(event, context):
             CopySource=copy_source,
             Key=s3_key
         )
-        sqs.send_message(
+        resp = sqs.send_message(
             QueueUrl=queue_url,
             MessageBody=f"Copied {s3_key} from {source_bucket} to {destination_bucket}"
         )
-        
